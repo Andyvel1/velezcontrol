@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Velez Control Systems — High-Current Intelligent Power Control</title>
+<meta name="description" content="VCS-SYS1: 4-channel high-current MOSFET controller with onboard MCU, gate drivers, real-time audio DSP, and Raspberry Pi 5 HAT interface. Works standalone or host-controlled."/>
+<meta property="og:title" content="Velez Control Systems — VCS-SYS1 Power Controller"/>
+<meta property="og:description" content="4-channel high-current MOSFET controller with onboard audio DSP, 3.5-28V buck converter, and Raspberry Pi 5 HAT interface. $49."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='30' y='30' width='40' height='40' fill='%23C8380A' transform='rotate(45 50 50)'/></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAFAF9;--bg2:#F2F1EF;--bg3:#EAEAE7;
+  --text:#1A1A1A;--text2:#3D3D3D;--text3:#6B6B6B;--text4:#999;--text5:#BBB;
+  --accent:#C8380A;--accent-light:#F4E8E3;--accent-dark:#8A2507;
+  --green:#1A7A4C;--green-light:#E6F4ED;
+  --blue:#2563EB;--blue-light:#EBF1FE;
+  --purple:#7C3AED;
+  --border:#E5E4E1;--border2:#D5D4D1;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
+  --max:1120px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.container{max-width:var(--max);margin:0 auto;padding:0 32px}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* NAV */
+nav{border-bottom:1px solid var(--border);background:rgba(250,250,249,.92);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;max-width:var(--max);margin:0 auto}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-mark{width:20px;height:20px;position:relative}
+.nav-mark::before{content:'';position:absolute;inset:2px;border:2px solid var(--accent);transform:rotate(45deg)}
+.nav-wordmark{font-weight:700;font-size:13px;letter-spacing:2.5px;color:var(--text);text-transform:uppercase}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text3);transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+
+/* HERO */
+.hero{padding:100px 0 80px;border-bottom:1px solid var(--border)}
+.hero-inner{display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:center}
+.hero-label{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:1.5px;margin-bottom:16px;font-weight:500}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.08;letter-spacing:-1.5px;color:var(--text);margin-bottom:20px}
+.hero-desc{font-size:17px;color:var(--text3);line-height:1.7;margin-bottom:32px;max-width:520px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;font-size:14px;font-weight:600;border-radius:6px;transition:all .2s;border:none;cursor:pointer;font-family:var(--sans)}
+.btn-fill{background:var(--accent);color:#fff}
+.btn-fill:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-outline:hover{border-color:var(--text3)}
+.hero-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.hero-card-title{font-family:var(--mono);font-size:11px;color:var(--text4);letter-spacing:1.5px;text-transform:uppercase}
+.hc-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--bg2)}
+.hc-row:last-child{border:none}
+.hc-label{font-size:13px;color:var(--text3)}
+.hc-value{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text)}
+
+/* SECTIONS */
+section{padding:80px 0}
+.section-border{border-top:1px solid var(--border)}
+.section-label{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:500}
+.section-label.green{color:var(--green)} .section-label.blue{color:var(--blue)} .section-label.purple{color:var(--purple)}
+section h2{font-size:clamp(24px,3.5vw,36px);font-weight:700;letter-spacing:-0.8px;color:var(--text);margin-bottom:12px}
+section h2+p, .section-desc{font-size:16px;color:var(--text3);line-height:1.7;max-width:600px;margin-bottom:40px}
+
+/* MODES */
+.modes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.mode-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:32px;transition:box-shadow .3s}
+.mode-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.mode-num{font-family:var(--mono);font-size:48px;font-weight:500;color:var(--bg3);line-height:1;margin-bottom:12px}
+.mode-card h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px}
+.mode-card p{font-size:14px;color:var(--text3);line-height:1.7}
+
+/* SIGNAL CHAIN */
+.chain{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:0;margin:40px 0 20px}
+.chain-node{padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:8px;text-align:center;min-width:110px;transition:border-color .3s}
+.chain-node:hover{border-color:var(--accent)}
+.chain-title{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.3px}
+.chain-sub{font-family:var(--mono);font-size:10px;color:var(--text4);margin-top:3px}
+.chain-arrow{width:32px;display:flex;align-items:center;justify-content:center;color:var(--text5);font-size:14px}
+
+/* I/O TABLE */
+.io-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;max-width:600px}
+.io-table{width:100%;border-collapse:collapse;font-size:14px}
+.io-table th{text-align:left;padding:12px 20px;font-family:var(--mono);font-size:11px;color:var(--text4);letter-spacing:1px;text-transform:uppercase;background:var(--bg2);border-bottom:1px solid var(--border);font-weight:500}
+.io-table td{padding:10px 20px;border-bottom:1px solid var(--bg2);color:var(--text3);font-size:13px}
+.io-table tr:last-child td{border:none}
+.io-table td:first-child{font-family:var(--mono);font-weight:500;color:var(--text)}
+
+/* SPECS */
+.specs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.spec-tile{background:#fff;border:1px solid var(--border);padding:20px}
+.spec-tile .label{font-family:var(--mono);font-size:10px;color:var(--text4);letter-spacing:1.5px;text-transform:uppercase}
+.spec-tile .val{font-size:22px;font-weight:700;color:var(--text);margin-top:6px;letter-spacing:-0.5px}
+.spec-tile .unit{font-size:13px;font-weight:400;color:var(--text3);margin-left:3px}
+.spec-tile.highlight{background:var(--accent-light);border-color:rgba(200,56,10,.12)}
+.spec-tile.highlight .val{color:var(--accent)}
+
+/* USES */
+.uses-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.use-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;transition:box-shadow .3s}
+.use-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.use-icon{font-size:24px;margin-bottom:12px}
+.use-card h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.use-card p{font-size:13px;color:var(--text3);line-height:1.6}
+
+/* MODULES */
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.mod-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;position:relative;overflow:hidden}
+.mod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mod-card.ps::before{background:var(--accent)} .mod-card.reg::before{background:var(--green)}
+.mod-card.aud::before{background:var(--blue)} .mod-card.lif::before{background:var(--purple)}
+.mod-pn{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;margin-bottom:4px;font-weight:500}
+.mod-pn.ps{color:var(--accent)} .mod-pn.reg{color:var(--green)} .mod-pn.aud{color:var(--blue)} .mod-pn.lif{color:var(--purple)}
+.mod-card h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
+.mod-desc{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:16px}
+.mod-specs{list-style:none;padding:0}
+.mod-specs li{font-size:12px;color:var(--text3);padding:4px 0;border-bottom:1px solid var(--bg2);display:flex;justify-content:space-between}
+.mod-specs li span{font-family:var(--mono);font-weight:500;color:var(--text2);font-size:12px}
+.mod-price{margin-top:16px;font-size:24px;font-weight:700;letter-spacing:-0.5px}
+.mod-price.ps{color:var(--accent)} .mod-price.reg{color:var(--green)} .mod-price.aud{color:var(--blue)} .mod-price.lif{color:var(--purple)}
+
+/* COMPARISON */
+.cmp-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:10px}
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px}
+.cmp-table th{padding:12px 18px;text-align:left;font-size:12px;font-weight:600;color:var(--text3);border-bottom:2px solid var(--border)}
+.cmp-table th.hl{color:var(--accent)}
+.cmp-table td{padding:10px 18px;border-bottom:1px solid var(--bg2);color:var(--text3)}
+.cmp-table td.hl{color:var(--text);font-weight:600;background:var(--accent-light)}
+.cmp-table tr:last-child td{border:none}
+
+/* DOCS */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.doc-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;transition:all .2s;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.doc-card:hover{border-color:var(--border2);box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.doc-type{font-family:var(--mono);font-size:10px;color:var(--text4);letter-spacing:1px;text-transform:uppercase}
+.doc-card h4{font-size:14px;font-weight:600;color:var(--text)}
+.doc-card p{font-size:12px;color:var(--text3);line-height:1.5;flex:1}
+
+/* CTA */
+.cta{background:#fff;border:1px solid var(--border);border-radius:12px;padding:48px;text-align:center;max-width:560px;margin:0 auto}
+.cta-price{font-size:48px;font-weight:700;color:var(--text);letter-spacing:-2px;margin-bottom:4px}
+.cta-sub{font-size:14px;color:var(--text3);margin-bottom:6px}
+.cta-detail{font-size:12px;color:var(--text4);margin-bottom:28px}
+.cta-form{display:flex;gap:0;max-width:380px;margin:0 auto}
+.cta-input{flex:1;padding:12px 16px;border:1px solid var(--border2);border-right:none;border-radius:6px 0 0 6px;font-family:var(--sans);font-size:14px;color:var(--text);outline:none;background:var(--bg)}
+.cta-input:focus{border-color:var(--accent)}
+.cta-input::placeholder{color:var(--text5)}
+.cta-submit{padding:12px 24px;background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:0 6px 6px 0;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
+.cta-submit:hover{background:var(--accent-dark)}
+.cta-success{padding:12px 20px;background:var(--green-light);border:1px solid rgba(26,122,76,.15);border-radius:6px;color:var(--green);font-size:14px;display:none}
+.cta-success.show{display:block}
+.cta-fine{font-size:11px;color:var(--text4);margin-top:16px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 0}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{display:flex;align-items:center;gap:8px}
+.footer-mark{width:14px;height:14px;position:relative}
+.footer-mark::before{content:'';position:absolute;inset:2px;border:1.5px solid var(--accent);transform:rotate(45deg)}
+.footer-wm{font-weight:700;font-size:11px;letter-spacing:2px;color:var(--text3);text-transform:uppercase}
+.footer-links{display:flex;gap:24px;font-size:12px;color:var(--text4)}
+.footer-links a:hover{color:var(--text3)}
+.footer-copy{font-size:11px;color:var(--text5)}
+
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;gap:32px}
+  .hero-card{max-width:360px}
+  .nav-links{gap:16px} .nav-links a{font-size:12px}
+  .container{padding:0 20px}
+  .chain-node{min-width:80px;padding:12px}
+  .chain-arrow{width:24px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><div class="nav-mark"></div><span class="nav-wordmark">Velez Control Systems</span></a>
+    <div class="nav-links"><a href="#how">How It Works</a><a href="#specs">Specs</a><a href="#uses">Applications</a><a href="#modules">Modules</a><a href="#docs">Docs</a><a href="#order">Order</a></div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="reveal"><div class="hero-label">VCS-SYS1</div></div>
+        <div class="reveal" style="transition-delay:.1s"><h1>Intelligent high-current power controller</h1></div>
+        <div class="reveal" style="transition-delay:.2s">
+          <p class="hero-desc">Drive any DC load with music-reactive intelligence — or take full control from your own code. Four MOSFET channels, dedicated gate drivers, onboard MCU with real-time audio DSP, and a Raspberry Pi 5 HAT interface. One board.</p>
+        </div>
+        <div class="reveal hero-btns" style="transition-delay:.3s">
+          <a href="#order" class="btn btn-fill">Pre-order &mdash; $49</a>
+          <a href="#specs" class="btn btn-outline">Technical specs</a>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.35s">
+        <div class="hero-card">
+          <div class="hero-card-title">Key Specifications</div>
+          <div class="hc-row"><span class="hc-label">Channels</span><span class="hc-value">4 (RGBW)</span></div>
+          <div class="hc-row"><span class="hc-label">MOSFET</span><span class="hc-value">AOD4184A</span></div>
+          <div class="hc-row"><span class="hc-label">V_DS (MOSFET)</span><span class="hc-value">40V</span></div>
+          <div class="hc-row"><span class="hc-label">Input Range</span><span class="hc-value">3.5 &ndash; 28V</span></div>
+          <div class="hc-row"><span class="hc-label">Gate Drivers</span><span class="hc-value">UCC27524DR &times;2</span></div>
+          <div class="hc-row"><span class="hc-label">MCU</span><span class="hc-value">MSPM0G3507</span></div>
+          <div class="hc-row"><span class="hc-label">Audio</span><span class="hc-value">PDM + 3-band DSP</span></div>
+          <div class="hc-row"><span class="hc-label">Regulator</span><span class="hc-value">3.3V / 3A</span></div>
+          <div class="hc-row"><span class="hc-label">Form Factor</span><span class="hc-value">RPi 5 HAT</span></div>
+          <div class="hc-row"><span class="hc-label">Programming</span><span class="hc-value">USB-C (BSL)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label">How it works</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>Three ways to use it</h2><p>The VCS-SYS1 is designed to be useful the moment you power it on, but flexible enough for any integration.</p></div>
+    <div class="reveal chain" style="transition-delay:.1s">
+      <div class="chain-node"><div class="chain-title">PDM Mic</div><div class="chain-sub">Audio In</div></div>
+      <div class="chain-arrow">&rarr;</div>
+      <div class="chain-node"><div class="chain-title">MSPM0G3507</div><div class="chain-sub">DSP + PWM</div></div>
+      <div class="chain-arrow">&rarr;</div>
+      <div class="chain-node"><div class="chain-title">UCC27524DR</div><div class="chain-sub">Gate Drive</div></div>
+      <div class="chain-arrow">&rarr;</div>
+      <div class="chain-node"><div class="chain-title">AOD4184A &times;4</div><div class="chain-sub">Power Stage</div></div>
+      <div class="chain-arrow">&rarr;</div>
+      <div class="chain-node"><div class="chain-title">Load</div><div class="chain-sub">LEDs / Motors</div></div>
+    </div>
+    <div class="reveal modes-grid" style="transition-delay:.15s">
+      <div class="mode-card">
+        <div class="mode-num">01</div>
+        <h3>Standalone</h3>
+        <p>Power it on and it runs. The onboard MCU captures audio, decomposes it into bass, mids, and highs, and maps each band to a PWM channel. No external controller required.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-num">02</div>
+        <h3>Raspberry Pi 5 HAT</h3>
+        <p>Mounts directly onto a Pi 5 via the 40-pin header. The board powers the Pi from its 3.3V rail. Install jumpers to route Pi PWM/GPIO lines to the gate drivers for host-controlled output &mdash; or leave them off and use the Pi purely as a compute platform for edge AI, wireless control, or automation.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-num">03</div>
+        <h3>External control</h3>
+        <p>Feed the board PWM and GPIO signals from any microcontroller via jumper-selectable headers. The board provides 3.3V regulated power back to your controller. That's the entire interface.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-num">04</div>
+        <h3>Custom firmware</h3>
+        <p>Flash your own code onto the MSPM0G3507 over USB-C. Full peripheral access. Stock firmware is open source under MIT license with a complete CCS project.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXTERNAL I/O -->
+<section class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label blue">External control interface</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>Simple connection</h2><p>2 PWM pins, 2 GPIO pins, power, and ground. Any microcontroller with digital outputs can drive all four channels.</p></div>
+    <div class="reveal io-wrap" style="transition-delay:.1s">
+      <table class="io-table">
+        <thead><tr><th>Pin</th><th>Type</th><th>Function</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td>PWM_1</td><td>Input</td><td>Ch 1 &amp; 2 duty cycle</td><td>3.3V / 5V</td></tr>
+          <tr><td>PWM_2</td><td>Input</td><td>Ch 3 &amp; 4 duty cycle</td><td>3.3V / 5V</td></tr>
+          <tr><td>GPIO_1</td><td>Input</td><td>Channel select / mode</td><td>Digital</td></tr>
+          <tr><td>GPIO_2</td><td>Input</td><td>Enable / config</td><td>Digital</td></tr>
+          <tr><td>VCC</td><td>Output</td><td>3.3V regulated power</td><td>From board</td></tr>
+          <tr><td>GND</td><td>&mdash;</td><td>Common ground</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section id="specs" class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label">Technical specifications</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>VCS-SYS1</h2></div>
+    <div class="reveal specs-grid" style="transition-delay:.1s">
+      <div class="spec-tile highlight"><div class="label">Channels</div><div class="val">4<span class="unit">RGBW</span></div></div>
+      <div class="spec-tile highlight"><div class="label">MOSFET</div><div class="val">AOD4184A</div></div>
+      <div class="spec-tile highlight"><div class="label">Max V_DS</div><div class="val">40<span class="unit">V</span></div></div>
+      <div class="spec-tile"><div class="label">Gate Drivers</div><div class="val">UCC27524<span class="unit">&times;2</span></div></div>
+      <div class="spec-tile"><div class="label">PWM Freq</div><div class="val">25<span class="unit">kHz</span></div></div>
+      <div class="spec-tile"><div class="label">MCU</div><div class="val">MSPM0<span class="unit">G3507</span></div></div>
+      <div class="spec-tile"><div class="label">Clock</div><div class="val">80<span class="unit">MHz</span></div></div>
+      <div class="spec-tile"><div class="label">Audio</div><div class="val">PDM<span class="unit">37.5kHz</span></div></div>
+      <div class="spec-tile"><div class="label">DSP</div><div class="val">3<span class="unit">bands</span></div></div>
+      <div class="spec-tile"><div class="label">Regulator</div><div class="val">3.3V<span class="unit">/ 3A</span></div></div>
+      <div class="spec-tile"><div class="label">Input Range</div><div class="val">3.5&ndash;28<span class="unit">V</span></div></div>
+      <div class="spec-tile"><div class="label">Programming</div><div class="val">USB-C<span class="unit">BSL</span></div></div>
+      <div class="spec-tile"><div class="label">Ext Control</div><div class="val">2 PWM<span class="unit">+ 2 GPIO</span></div></div>
+      <div class="spec-tile"><div class="label">Output</div><div class="val">JST VH<span class="unit">4-pin</span></div></div>
+      <div class="spec-tile"><div class="label">Firmware</div><div class="val">Open<span class="unit">MIT</span></div></div>
+      <div class="spec-tile"><div class="label">Form Factor</div><div class="val">RPi 5<span class="unit">HAT</span></div></div>
+      <div class="spec-tile"><div class="label">PCB</div><div class="val">6<span class="unit">layer</span></div></div>
+      <div class="spec-tile"><div class="label">Temp</div><div class="val">-40&ndash;85<span class="unit">&deg;C</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- USES -->
+<section id="uses" class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label">Applications</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>What you can drive</h2></div>
+    <div class="reveal uses-grid" style="transition-delay:.1s">
+      <div class="use-card"><div class="use-icon">💡</div><h3>LED strips</h3><p>RGBW strip control with audio-reactive modes built into stock firmware.</p></div>
+      <div class="use-card"><div class="use-icon">⚡</div><h3>DC motors</h3><p>PWM speed control for robotics, CNC, and automation. No audible whine at 25kHz.</p></div>
+      <div class="use-card"><div class="use-icon">🔥</div><h3>Heaters</h3><p>Heating elements for 3D printers, reflow ovens, and thermal chambers.</p></div>
+      <div class="use-card"><div class="use-icon">💧</div><h3>Pumps &amp; valves</h3><p>Solenoids and pumps with inductive load protection.</p></div>
+      <div class="use-card"><div class="use-icon">🎵</div><h3>Audio-reactive</h3><p>Onboard mic and real-time DSP for music-responsive installations.</p></div>
+      <div class="use-card"><div class="use-icon">🔧</div><h3>Custom</h3><p>Open firmware and full MCU access for your own applications.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules" class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label green">Also available separately</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>Individual modules</h2><p>Each subsystem is available as a standalone board for custom integrations.</p></div>
+    <div class="reveal mod-grid" style="transition-delay:.1s">
+      <div class="mod-card ps"><div class="mod-pn ps">VCS-PS4</div><h3>Power Stage</h3><p class="mod-desc">4-channel MOSFET switching with dedicated gate driver ICs.</p>
+        <ul class="mod-specs"><li>MOSFETs<span>AOD4184A &times;4</span></li><li>Gate Drivers<span>UCC27524DR &times;2</span></li><li>Voltage<span>40V max</span></li></ul>
+        <div class="mod-price ps">$24</div></div>
+      <div class="mod-card reg"><div class="mod-pn reg">VCS-REG1</div><h3>Buck Converter</h3><p class="mod-desc">3.3V/3A regulated output from up to 28V input.</p>
+        <ul class="mod-specs"><li>IC<span>TPS54331D</span></li><li>Input<span>3.5 &ndash; 28V</span></li><li>Efficiency<span>90%</span></li></ul>
+        <div class="mod-price reg">$12</div></div>
+      <div class="mod-card aud"><div class="mod-pn aud">VCS-AUD1</div><h3>Audio DSP</h3><p class="mod-desc">MSPM0G3507 MCU with PDM mic and real-time DSP firmware.</p>
+        <ul class="mod-specs"><li>MCU<span>80MHz Cortex-M0+</span></li><li>Audio<span>PDM 37.5kHz</span></li><li>USB<span>USB-C BSL</span></li></ul>
+        <div class="mod-price aud">$22</div></div>
+      <div class="mod-card lif"><div class="mod-pn lif">VCS-LIF1</div><h3>Logic Interface</h3><p class="mod-desc">Breakout header for external MCU connection.</p>
+        <ul class="mod-specs"><li>Interface<span>2 PWM + 2 GPIO</span></li><li>Logic<span>3.3V / 5V</span></li><li>Power<span>3.3V regulated out</span></li></ul>
+        <div class="mod-price lif">$9</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label">Comparison</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>How the VCS-SYS1 compares</h2></div>
+    <div class="reveal cmp-wrap" style="transition-delay:.1s">
+      <table class="cmp-table">
+        <thead><tr><th></th><th class="hl">VCS-SYS1</th><th>Relay boards</th><th>Automation HATs</th><th>DIY</th></tr></thead>
+        <tbody>
+          <tr><td>PWM control</td><td class="hl">25kHz</td><td>On/off only</td><td>Limited</td><td>Manual</td></tr>
+          <tr><td>Channels</td><td class="hl">4</td><td>4&ndash;8 relay</td><td>3</td><td>Custom</td></tr>
+          <tr><td>Onboard MCU</td><td class="hl">MSPM0G3507</td><td>None</td><td>None</td><td>None</td></tr>
+          <tr><td>Gate drivers</td><td class="hl">Dedicated IC</td><td>None</td><td>None</td><td>Maybe</td></tr>
+          <tr><td>Audio DSP</td><td class="hl">3-band real-time</td><td>No</td><td>No</td><td>No</td></tr>
+          <tr><td>Standalone</td><td class="hl">Yes</td><td>No</td><td>No</td><td>Depends</td></tr>
+          <tr><td>Open firmware</td><td class="hl">MIT</td><td>N/A</td><td>Closed</td><td>DIY</td></tr>
+          <tr><td>Pi 5 HAT</td><td class="hl">Native</td><td>No</td><td>Some</td><td>Manual</td></tr>
+          <tr><td>PCB layers</td><td class="hl">6</td><td>2</td><td>4</td><td>2&ndash;4</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- DOCS -->
+<section id="docs" class="section-border">
+  <div class="container">
+    <div class="reveal"><div class="section-label green">Documentation</div></div>
+    <div class="reveal" style="transition-delay:.05s"><h2>Datasheets &amp; resources</h2></div>
+    <div class="reveal docs-grid" style="transition-delay:.1s">
+      <a class="doc-card" href="VCS_SYS1_Datasheet.pdf" target="_blank"><div class="doc-type">PDF &mdash; System</div><h4>VCS-SYS1 Datasheet</h4><p>Full specs, block diagram, pin config, BOM, electrical characteristics</p></a>
+      <div class="doc-card"><div class="doc-type">PDF &mdash; Power</div><h4>VCS-PS4 Power Stage</h4><p>MOSFET specs, gate drive, shunt regulator, thermals</p></div>
+      <div class="doc-card"><div class="doc-type">PDF &mdash; Regulator</div><h4>VCS-REG1 Buck Converter</h4><p>TPS54331D design, components, protections</p></div>
+      <div class="doc-card"><div class="doc-type">PDF &mdash; Audio</div><h4>VCS-AUD1 Audio DSP</h4><p>MCU, PDM pipeline, CIC/biquad, USB-C BSL</p></div>
+      <div class="doc-card"><div class="doc-type">PDF &mdash; Interface</div><h4>VCS-LIF1 Logic Interface</h4><p>Pinout, external control guide</p></div>
+      <div class="doc-card"><div class="doc-type">GitHub</div><h4>Firmware Source</h4><p>CCS project, SysConfig, API docs. MIT license.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section id="order" class="section-border" style="padding-bottom:100px">
+  <div class="container">
+    <div class="reveal">
+      <div class="cta">
+        <div class="section-label" style="text-align:center">First batch &mdash; April 2026</div>
+        <div class="cta-price">$49</div>
+        <div class="cta-sub">VCS-SYS1 &mdash; Assembled board with stock firmware</div>
+        <div class="cta-detail">Individual modules also available &middot; Pro bundle with LED strip + PSU: $129</div>
+        <div class="cta-form" id="cta-form">
+          <input class="cta-input" type="email" id="cta-email" placeholder="your@email.com"/>
+          <button class="cta-submit" id="cta-submit">Notify me</button>
+        </div>
+        <div class="cta-success" id="cta-success">You're on the list. We'll email you when the first batch ships.</div>
+        <div class="cta-fine">No payment until boards ship. Designed in Austin, TX. Assembled by JLCPCB.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand"><div class="footer-mark"></div><span class="footer-wm">Velez Control Systems</span></div>
+      <div class="footer-links"><a href="#specs">Specs</a><a href="#modules">Modules</a><a href="#docs">Docs</a><a href="mailto:contact@velezcontrol.com">Contact</a></div>
+      <div class="footer-copy">Designed by Andy Velez &middot; Austin, TX &middot; &copy; 2026</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const o=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(e=>o.observe(e));
+document.getElementById('cta-submit').addEventListener('click',()=>{
+  const e=document.getElementById('cta-email').value;
+  if(e.includes('@')&&e.includes('.')){
+    document.getElementById('cta-form').style.display='none';
+    document.getElementById('cta-success').classList.add('show');
+  }
+});
+</script>
+</body>
+</html>
